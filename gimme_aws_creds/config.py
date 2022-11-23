@@ -173,7 +173,10 @@ class Config(object):
             self.output_format = args.output_format
         if args.roles is not None:
             self.roles = [role.strip() for role in args.roles.split(',') if role.strip()]
-        self.conf_profile = args.profile or 'DEFAULT'
+        # JCREYF - 20221122 - Pull the profile name from an environment variable if not given through CLI and display the name if we didn't give it:
+        self.conf_profile = args.profile or os.getenv("AWS_CREDS_PROFILE") or 'DEFAULT'
+        if args.profile is None:
+            ui.default.message(f"Using profile: {self.conf_profile}")
 
     def _handle_config(self, config, profile_config, include_inherits = True):
         if "inherits" in profile_config.keys() and include_inherits:
